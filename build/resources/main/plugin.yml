@@ -1,0 +1,88 @@
+name: UniqueBoss
+version: '2.0-OPTIMIZED'
+main: org.bedepay.uniqueboss.UniqueBoss
+api-version: '1.20'
+description: Плагин уникального босса - Темного Повелителя с системой сложности, автоивентами и крафтом брони
+author: BedePay
+website: https://github.com/bedepay
+
+commands:
+  summonboss:
+    description: Вызвать Темного Повелителя
+    usage: /<command>
+    permission: uniqueboss.summon
+    
+  bossinfo:
+    description: Информация о Темном Повелителе
+    usage: /<command>
+    permission: uniqueboss.info
+    
+  killboss:
+    description: Убить Темного Повелителя (админ)
+    usage: /<command>
+    permission: uniqueboss.kill
+    
+  uniqueboss:
+    description: Управление плагином
+    usage: /<command> reload
+    permission: uniqueboss.reload
+    
+  bossevent:
+    description: Управление автоивентами
+    usage: /<command> [info|status|force|stop|reload]
+    permission: uniqueboss.event
+    
+  bossgive:
+    description: Выдать предметы босса (админ)
+    usage: /<command> <игрок> <предмет> [количество]
+    permission: uniqueboss.give
+    
+  bossdebug:
+    description: Управление боссом (админ)
+    usage: /<command> [status|teleport|heal|difficulty]
+    permission: uniqueboss.debug
+    
+permissions:
+  uniqueboss.*:
+    description: Все права плагина
+    default: op
+    children:
+      uniqueboss.summon: true
+      uniqueboss.info: true
+      uniqueboss.kill: true
+      uniqueboss.reload: true
+      uniqueboss.event: true
+      uniqueboss.give: true
+      uniqueboss.debug: true
+      
+  uniqueboss.summon:
+    description: Позволяет вызывать босса
+    default: op
+    
+  uniqueboss.info:
+    description: Позволяет получать информацию о боссе
+    default: true
+    
+  uniqueboss.kill:
+    description: Позволяет убивать босса
+    default: op
+    
+  uniqueboss.reload:
+    description: Позволяет перезагружать конфиг
+    default: op
+    
+  uniqueboss.event:
+    description: Позволяет управлять автоивентами
+    default: op
+    
+  uniqueboss.event.info:
+    description: Позволяет просматривать информацию об ивентах
+    default: true
+    
+  uniqueboss.give:
+    description: Позволяет выдавать предметы босса
+    default: op
+    
+  uniqueboss.debug:
+    description: Позволяет использовать команды управления боссом
+    default: op
