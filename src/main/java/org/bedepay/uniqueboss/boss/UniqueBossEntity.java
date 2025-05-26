@@ -2188,14 +2188,21 @@ public class UniqueBossEntity {
         
         // ЯЙЦА МОБОВ (с шансом)
         if (config.isMobEggsEnabled() && random.nextInt(100) < config.getMobEggsChance()) {
-            int eggAmount = config.getMobEggsMinAmount() + 
-                random.nextInt(config.getMobEggsMaxAmount() - config.getMobEggsMinAmount() + 1);
+            int minAmount = config.getMobEggsMinAmount();
+            int maxAmount = config.getMobEggsMaxAmount();
+            int eggAmount = minAmount + random.nextInt(maxAmount - minAmount + 1);
             
             for (int i = 0; i < eggAmount; i++) {
                 ItemStack mobEgg = createRandomMobEgg();
                 if (mobEgg != null) {
                     rewards.add(mobEgg);
                 }
+            }
+            
+            // Уведомляем игроков о яйцах мобов
+            List<Player> nearbyPlayers = getNearbyPlayers(50);
+            for (Player player : nearbyPlayers) {
+                player.sendMessage(ChatColor.LIGHT_PURPLE + "🥚 Удача! Выпало " + eggAmount + " яиц мобов!");
             }
         }
         

@@ -73,6 +73,7 @@ public class BossDebugCommand implements CommandExecutor {
         sender.sendMessage(ChatColor.YELLOW + "/bossdebug teleport" + ChatColor.GRAY + " - телепорт к боссу");
         sender.sendMessage(ChatColor.YELLOW + "/bossdebug heal" + ChatColor.GRAY + " - восстановить здоровье босса");
         sender.sendMessage(ChatColor.YELLOW + "/bossdebug difficulty <1-5>" + ChatColor.GRAY + " - изменить сложность");
+        sender.sendMessage(ChatColor.YELLOW + "/bossdebug testdrop" + ChatColor.GRAY + " - тест дропа наград (яйца мобов)");
     }
 
     private void showBossStatus(CommandSender sender) {
@@ -179,6 +180,53 @@ public class BossDebugCommand implements CommandExecutor {
             
         } catch (NumberFormatException e) {
             sender.sendMessage(ChatColor.RED + "❌ Некорректный уровень сложности: " + args[1]);
+        }
+    }
+    
+    private void testBossDrop(Player player) {
+        player.sendMessage(ChatColor.GOLD + "🧪 Тестирование дропа босса...");
+        
+        // Создаем тестовый объект босса для вызова метода создания наград
+        UniqueBossEntity testBoss = new UniqueBossEntity(player.getLocation(), config);
+        
+        try {
+            // Используем рефлексию для доступа к приватному методу createUniqueRewards
+            java.lang.reflect.Method method = UniqueBossEntity.class.getDeclaredMethod("createUniqueRewards");
+            method.setAccessible(true);
+            
+            @SuppressWarnings("unchecked")
+            java.util.List<org.bukkit.inventory.ItemStack> rewards = 
+                (java.util.List<org.bukkit.inventory.ItemStack>) method.invoke(testBoss);
+            
+            player.sendMessage(ChatColor.GREEN + "✅ Сгенерировано " + rewards.size() + " наград:");
+            
+            // Подсчитываем яйца мобов
+            int mobEggCount = 0;
+            for (org.bukkit.inventory.ItemStack item : rewards) {
+                if (item.getType().name().endsWith("_SPAWN_EGG")) {
+                    mobEggCount++;
+                    player.sendMessage(ChatColor.LIGHT_PURPLE + "  🥚 " + item.getType().name() + " x" + item.getAmount());
+                }
+            }
+            
+            if (mobEggCount == 0) {
+                player.sendMessage(ChatColor.YELLOW + "⚠️ Яйца мобов не выпали в этом тесте");
+                player.sendMessage(ChatColor.GRAY + "Это нормально, шанс выпадения: " + config.getMobEggsChance() + "%");
+            } else {
+                player.sendMessage(ChatColor.GREEN + "✅ Всего яиц мобов: " + mobEggCount);
+            }
+            
+            // Отдаем игроку награды для проверки
+            Location dropLoc = player.getLocation().add(0, 1, 0);
+            for (org.bukkit.inventory.ItemStack reward : rewards) {
+                player.getWorld().dropItemNaturally(dropLoc, reward);
+            }
+            
+            player.sendMessage(ChatColor.AQUA + "📦 Все награды выброшены рядом с вами!");
+            
+        } catch (Exception e) {
+            player.sendMessage(ChatColor.RED + "❌ Ошибка при тестировании дропа: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 } 
